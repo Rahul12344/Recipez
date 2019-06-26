@@ -15,6 +15,14 @@ const getuser = require("./user_auth/db_controllers/getuser");
 
 const recipe = require("./recipe_and_image/receipt_to_recipe/Recipe.js")
 
+const exec = require('child_process').exec;
+child = exec('source ./recipe/app-env',
+    function (error, stdout, stderr) {
+        if (error !== null) {
+             console.log('exec error: ' + error);
+        }
+    });
+
 const app = express();
 
 app.use(bodyParser.json());
