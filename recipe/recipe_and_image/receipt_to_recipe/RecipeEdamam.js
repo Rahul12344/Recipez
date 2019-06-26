@@ -1,6 +1,6 @@
 var buildUrl = require('build-url');
 const axios = require('axios');
-const compile = require('./text_classify.js');
+const compile = require('../TextClassify.js');
 const unirest = require('unirest');
 
 const createQuery = require('./QueryCreater.js')
