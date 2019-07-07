@@ -1,10 +1,9 @@
-const vision = require('@google-cloud/vision');
 const axios = require('axios');
 const cheerio = require('cheerio');
-const unirest = require('unirest');
 
-const parseImage = require('../../TextClassify.js');
+const parseImage = require('../../TextClassify');
 const createTargetQuery = require('./QueryCreater.js')
+const reformatter = require('./TargetItem.js')
 
 async function getTargetItem(listOfQueries) {
   var i;
@@ -18,17 +17,24 @@ async function getTargetItem(listOfQueries) {
         devtoList.push($(this).find('h2').text().trim());
       });
     } catch(error){
-      console.log(error)
+      return error;
     }
   }
   return devtoList;
 }
 
 async function findItems(filePath) {
-  var loq = await parseImage(filePath);
-  queries = createTargetQuery(loq)
-  var dtl = await getTargetItem(queries);
-  return dtl;
+  try {
+    var loq = await parseImage(filePath);
+    loq =  reformatter(loq);
+
+    queries = createTargetQuery(loq)
+    var dtl = await getTargetItem(queries);
+    return dtl;
+  }
+  catch (error) {
+    return error;
+  }
 }
 
 module.exports = findItems;

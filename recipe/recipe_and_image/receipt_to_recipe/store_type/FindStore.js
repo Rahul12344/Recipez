@@ -1,20 +1,29 @@
-function getStore() {
-  if (/* insert store case */) {
-    return
+const parseImage = require('../../TextClassify');
+
+
+async function getStore(filePath) {
+  var storename = await parseImage(filePath);
+  storename = storename[1].description.toLowerCase();
+  if (storename === "target") {
+    return 0;
   }
-  if (/* insert store case */) {
-    return
+  if (storename === "walmart") {
+    return 1;
   }
-  if (/* insert store case */) {
-    return
+  if (storename === "trader") {
+    return 2;
   }
-  return
+  return -1;
 }
 
-async function getCode (filePath) {
-  /* function to parse out store names
-  from receipt  */
-  return;
+async function getStoreCode (filePath) {
+  try {
+    var storeCode = await getStore(filePath);
+    return storeCode;
+  }
+  catch (error) {
+    return error;
+  }
 }
 
-module.exports = getCode;
+module.exports = getStoreCode;

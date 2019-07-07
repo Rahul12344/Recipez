@@ -1,7 +1,5 @@
-var buildUrl = require('build-url');
 const axios = require('axios');
-const compile = require('../TextClassify.js');
-const unirest = require('unirest');
+
 
 const createQuery = require('./QueryCreater.js')
 
@@ -10,7 +8,7 @@ async function recipe(ingredients){
   // TODO: Error handling
   */
   if(ingredients.length <= 0){
-    throw NoRecipeException;
+    //throw NoRecipeException;
   }
   query_url = createQuery(ingredients);
   shortenedRecipes = [];
@@ -21,7 +19,7 @@ async function recipe(ingredients){
     // TODO: Error handling
     */
     if(recipes.length == 0){
-      throw NoRecipeException;
+      //throw NoRecipeException;
     }
     for(var i = 0; i < recipes.length; i++){
       var curr_recipe = recipes[i].recipe;
@@ -84,8 +82,7 @@ async function getFinal(item){
     try {
       recipes = await recipe([potential_ings[i]]);
     } catch(error) {
-      console.log(error);
-      return "ERR";
+      return error;
     }
     if(recipes != ''){
       return potential_ings[i];
@@ -105,7 +102,7 @@ async function recipeParser(result){
       item = await getFinal(curr_item);
     }
     catch(err){
-      console.log(err)
+      return err;
     }
     if(item != '' && item != 'ERR'){
       final_items.push(item)
@@ -119,7 +116,7 @@ async function recipeParser(result){
     try {
       recipes = await recRecipe(final_items, recipes);
     } catch(error) {
-      console.log(error);
+      return error;
     }
     if(recipes != '') {
       return recipes;
@@ -131,8 +128,12 @@ async function recipeParser(result){
 }
 
 async function comEdamRec(result) {
-  finalRecipe = await recipeParser(result);
-  return finalRecipe;
+  try {
+    finalRecipe = await recipeParser(result);
+    return finalRecipe;
+  } catch (error) {
+    return error;
+  }
 }
 
 module.exports = comEdamRec;

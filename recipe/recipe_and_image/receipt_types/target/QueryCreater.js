@@ -1,3 +1,5 @@
+const reformat_rdci = require('./Reformat.js')
+
 function createTargetQuery(rdci_codes) {
   listOfQueries = [];
 

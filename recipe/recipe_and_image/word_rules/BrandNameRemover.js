@@ -6,8 +6,10 @@
     No unnecessary qualifiers i.e. weight
 */
 function brandParser(word, brandNames) {
-  for brand in brandNames {
-    word = word.replace(brand, '')
+  for (var i = 0; i < brandNames[0].length; i++) {
+    word = word.replace(brandNames[0][i].brand.toLowerCase(), '')
   }
   return word;
 }
+
+module.exports = brandParser;

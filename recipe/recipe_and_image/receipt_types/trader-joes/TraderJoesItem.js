@@ -1,20 +1,15 @@
-const axios = require('axios');
-const cheerio = require('cheerio');
-const unirest = require('unirest');
+const parseImage = require('../../TextClassify');
+ 
+/*
+  Need sample receipts
+*/
 
-async function targetItems(filePath) {
-  let rdci_codes = [];
-
-  try {
-    const [result] = await client.textDetection(filePath);
-    const detections = result.textAnnotations;
-    detections.forEach(text => {
-      if(parseOutput(text.description))
-        rdci_codes.push(text.description);
-    });
-  } catch(error){
-    return
-  }
-
-  return rdci_codes;
+async function getBoundingBox(detections) {
+  let bounding_box = [];
+  detections.forEach(detection => {
+    bounding_box.push(detection.boundingPoly.vertices);
+  });
+  return bounding_box;
 }
+
+module.exports = getBoundingBox;

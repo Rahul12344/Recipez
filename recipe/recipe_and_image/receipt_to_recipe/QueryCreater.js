@@ -1,3 +1,5 @@
+const buildUrl = require('build-url');
+
 function createPath(){
   return buildUrl('https://api.edamam.com', {
     path: 'search',

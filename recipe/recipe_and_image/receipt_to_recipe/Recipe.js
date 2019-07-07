@@ -3,23 +3,52 @@
 */
 const getIngredients = require('./store_type/ItemFromStore.js');
 const comEdamRec = require('./RecipeEdamam.js');
+const canonRules = require('../word_rules/CanonRules.js')
 
 async function edamRecipe (ingredients) {
-  recipes = await comEdamRec(ingredients);
-  return recipes;
+  try {
+    recipes = await comEdamRec(ingredients);
+    return recipes;
+  }
+  catch (error) {
+    return error;
+  }
 }
 
-async function dbRecipe (ingredients) {
-  recipes = await recipeFromDB(ingredients);
-  return recipes;
+async function getRecipeFromDB (ingredients) {
+  try {
+    recipes = await recipeFromDB(ingredients);
+    return recipes;
+  }
+  catch(error) {
+    return error;
+  }
 }
 
 async function compileRecipes() {
-  ingredients = await getIngredients();
-  erecipe = await edamRecipe(ingredients); drecipe = await dbRecipe(ingredients);
-  recipe = erecipe + drecipe;
+  try {
+    ingredients = await getIngredients(); cleanIngredients = [];
+    for (ingredient in ingredients) {
+      try {
+        var cleanIngredient = await canonRules(ingredient);
+        cleanIngredients.push(cleanIngredient);
+      } 
+      catch (error) {
+        return error;
+      }
+    }
+    try {
+      erecipe = await edamRecipe(cleanIngredients); drecipe = await getRecipeFromDB(cleanIngredients);
+      recipe = erecipe + drecipe;
+      return recipe;
+    }
+    catch (error) {
+      return error;
+    }
+  }
+  catch (error) {
 
-  return recipe;
+  }
 }
 
 module.exports = compileRecipes;
