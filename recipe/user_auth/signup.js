@@ -1,4 +1,3 @@
-var admin = require("firebase-admin");
 var firebase = require("firebase");
 
 function signup(emailCred, passCred) {

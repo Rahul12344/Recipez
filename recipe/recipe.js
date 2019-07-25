@@ -1,22 +1,23 @@
 const bodyParser = require('body-parser');
 const express  = require('express');
-const multer = require('multer');
-const path = require('path');
 const cors = require('cors');
-const firebase = require('firebase');
 const admin = require('firebase-admin');
+const firebase = require('firebase');
+const multer = require('multer');
+var upload = multer({ dest: 'uploads/' })
+const path = require('path');
 
-const serviceAccount = require("./user_auth/credentials/serviceAccountKey.json");
-const fbinit = require("./user_auth/db_controllers/db_manager");
-const login = require("./user_auth/db_controllers/login");
-const signup = require("./user_auth/db_controllers/signup");
-const logout = require("./user_auth/db_controllers/logout");
-const getuser = require("./user_auth/db_controllers/getuser");
+const fbinit = require("./user_auth/auth_manager");
+const login = require("./user_auth/login");
+const signup = require("./user_auth/signup");
+const logout = require("./user_auth/logout");
+const getuser = require("./user_auth/getuser");
+const firebaseRecipe = require('./user_auth/FirebaseRecipes/FirebaseRecipes.js');
+const recipe = require('../recipe/recipe_and_image/receipt_to_recipe/Recipe.js');
 
-const recipe = require("./recipe_and_image/receipt_to_recipe/Recipe.js")
 
 const exec = require('child_process').exec;
-child = exec('source ./recipe/app-env',
+child = exec('source ./app-env',
     function (error, stdout, stderr) {
         if (error !== null) {
              console.log('exec error: ' + error);
@@ -24,7 +25,6 @@ child = exec('source ./recipe/app-env',
     });
 
 const app = express();
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
@@ -32,21 +32,26 @@ app.use(cors());
 fbinit.init;
 fbinit.initAdmin;
 
+const firebasedb = admin.database();
+
 app.post('/login', (req, res) => {
-    console.log("login");
     login(req.query.email, req.query.password)
     .then((loggedInUser) => {
+        console.log("LOGGING IN");
         res.send(loggedInUser);
     })
     .catch((error) => {
-        console.log(error);
+        res.send('');
     });
 });
 
 app.post('/register', (req, res) => {
+    console.log("Registering");
     signup(req.query.email, req.query.password)
     .then((signedInUser) => {
         res.send(signedInUser);
+        firebasedb.ref('users/' + firebase.auth().currentUser.uid + "/profile/").set(JSON.parse(JSON.stringify(firebase.auth().currentUser)));
+        firebasedb.ref('users/' + firebase.auth().currentUser.uid + "/recipes/").set('');
     })
     .catch((error) => {
         console.log(error);
@@ -56,28 +61,61 @@ app.post('/register', (req, res) => {
 app.post('/logout', (req,res) => {
     logout()
     .then(() => {
+        res.send('Logged Out');
     })
     .catch((error) => {
         console.log(error);
     });
 });
 
-app.post('/getuser', (req,res) => {
+app.post('/receipttorecipe', upload.single("receipt"), (req, res, next) => {
+    console.log('RECIPE')
+    recipe(req.query.file)
+    .then((recipe) => {
+        res.send(recipe);
+    })
+    .catch((error) => {
+        console.log(error);
+    })
+});
+
+app.post('/addrecipe', (req,res) => {
+    console.log("Adding recipe");
+    firebaseRecipe.addRecipe(req.query.recipe)
+    .then((recipe) => {
+        res,send(recipe);
+    })
+    .catch((error) => {
+        console.log(error);
+    })
+});
+
+app.get('/getuser', (req,res) => {
     res.send(getuser().currentUser.email);
 });
 
-app.post('/getrecipe', (req,res) => {
-  recipe()
-  .then((recipes) => {
-    res.send(recipes);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+app.get('/getrecipe', (req,res) => {
+    firebaseRecipe.getRecipe(req.query.ingredients)
+    .then((recipes) => {
+        res.send(recipes);
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+});
+
+app.get('/getallrecipes', (req,res) => {
+    firebaseRecipe.getAllRecipesComp(firebasedb,firebase)
+    .then(recipes => {
+        res.send(recipes);
+    })
+    .catch((error) => {
+        console.log(error);
+    });
 });
 
 app.get('/', (req, res) => {
-  res.send("");
+  res.send("Recipes");
 });
 
 app.listen(process.env.PORT || 3000, () => {

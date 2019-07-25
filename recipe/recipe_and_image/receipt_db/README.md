@@ -24,4 +24,4 @@ Hosted on MongoDB
     }
 }
 
-PROTOCOL: Query MongoDB first - query Edamam second - limit to five recipe suggestion - every Edamam query, add to MongoDB if successful
+PROTOCOL: Query MongoDB first - query Edamam second - limit to five recipe suggestion - for every Edamam query, add to MongoDB if successful

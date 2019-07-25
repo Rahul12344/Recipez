@@ -20,6 +20,7 @@ function charParser(word) {
   word = word.replace(/products?/g, '');
   word = word.replace(/own/g, '');
   word = word.replace(/foods?/g, '');
+  word = word.replace(/each/g, '');
   word = word.replace(/\-/g,'');
   word = word.replace('.',' ');
   word = word.replace('/',' ');
@@ -39,7 +40,7 @@ function charParser(word) {
   word = word.replace(/(\s)+/g,' ');
   word = word.replace(/^(\s)/g,'');
   word = word.replace(/(\s)$/g,'');
-  console.log(word);
+
   return word;
 }
 

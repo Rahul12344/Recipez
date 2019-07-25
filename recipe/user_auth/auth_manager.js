@@ -1,19 +1,19 @@
-var admin = require("firebase-admin");
-var firebase = require("firebase");
+const admin = require("firebase-admin");
+const firebase = require("firebase");
 
-var serviceAccount = require("./credentials/serviceAccountKey.json");
-var firebaseConfig = require("./credentials/export-key.js")
+const serviceAccount = require("./credentials/serviceAccountKey.json");
+const firebaseConfig = require("./credentials/export-key.js")
 
-const firebaseConfig = firebaseConfig();
+const config = firebaseConfig();
 
 function init() {
-    firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(config);
 }
 
 function initAdmin() {
     return admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
-        databaseURL: "https://vitadb-c40c2.firebaseio.com/"
+        databaseURL: config.databaseURL
     });
 }
 

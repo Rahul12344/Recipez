@@ -2,12 +2,31 @@
 // TODO: Compile list of recipes obtained from API and db
 */
 const getIngredients = require('./store_type/ItemFromStore.js');
-const comEdamRec = require('./RecipeEdamam.js');
-const canonRules = require('../word_rules/CanonRules.js')
+const getRecipeFromAPI = require('./RecipeEdamam.js');
+const recipeFromDB = require('./RecipeFromDB.js')
+const canonRules = require('../word_rules/CanonRules.js');
+
+async function compileRecipes(filePath) {
+  ingredients = await getIngredients(filePath);
+  cleanIngredients = [];
+  for (var i = 0; i < ingredients.length; i++) {
+    var cleanIngredient = await canonRules(ingredients[i]);
+    cleanIngredients.push(cleanIngredient);
+  }
+  recipe = '';
+  drecipe = await getRecipeFromDB(cleanIngredients);
+  if(drecipe.length > 0){
+    recipe = drecipe[0];
+  }
+  else{
+    recipe = await edamRecipe(cleanIngredients);
+  }
+  return recipe;  
+}
 
 async function edamRecipe (ingredients) {
   try {
-    recipes = await comEdamRec(ingredients);
+    recipes = await getRecipeFromAPI(ingredients);
     return recipes;
   }
   catch (error) {
@@ -25,30 +44,6 @@ async function getRecipeFromDB (ingredients) {
   }
 }
 
-async function compileRecipes() {
-  try {
-    ingredients = await getIngredients(); cleanIngredients = [];
-    for (ingredient in ingredients) {
-      try {
-        var cleanIngredient = await canonRules(ingredient);
-        cleanIngredients.push(cleanIngredient);
-      } 
-      catch (error) {
-        return error;
-      }
-    }
-    try {
-      erecipe = await edamRecipe(cleanIngredients); drecipe = await getRecipeFromDB(cleanIngredients);
-      recipe = erecipe + drecipe;
-      return recipe;
-    }
-    catch (error) {
-      return error;
-    }
-  }
-  catch (error) {
-
-  }
-}
+compileRecipes(['chicken']);
 
 module.exports = compileRecipes;

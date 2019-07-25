@@ -11,7 +11,6 @@ function rdciCodes(detections) {
     if(parseOutput(text.description))
       rdci_codes.push(text.description);
     });
-
   return rdci_codes;
 }
 

@@ -10,4 +10,5 @@ async function parseImage(filePath) {
     return error;
   }
 }
+
 module.exports = parseImage;

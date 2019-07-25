@@ -3,8 +3,8 @@ const brand = require('./BrandNames');
 const brandNameRem = require('./BrandNameRemover');
 
 async function CanonRules(word) {
-    word = charRem(word);
     try {
+        word = charRem(word);
         var brands = await brand();
         word = brandNameRem(word, brands);
         word = word.replace(/(\s)+/g,' ');

@@ -2,11 +2,12 @@ var MongoClient = require('mongodb').MongoClient;
 
 var url = "mongodb://localhost:27017/";
 
-function driver() {
-    MongoClient.connect(url, function(err, client) {
-        if (err) throw err;
-        return client.db('receipt_db');
-    }); 
+async function driver() {
+    try {
+        client = await MongoClient.connect(url, { useNewUrlParser: true });
+        return (client.db('receipt_db'));
+    } catch (error) {
+        throw error;
+    }    
 }
-
 module.exports = driver;

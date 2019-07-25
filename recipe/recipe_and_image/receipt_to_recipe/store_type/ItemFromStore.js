@@ -1,6 +1,6 @@
 const store = require('./FindStore');
 const target = require('../../receipt_types/target/ItemFinder.js');
-const trader = require('');
+const trader = require('../../receipt_types/trader-joes/ItemFinder.js');
 
 async function getIngredients (filePath) {
   try {
@@ -14,7 +14,7 @@ async function getIngredients (filePath) {
         ingredients = [];
         break;
       case 2:
-        ingredients = [];
+        ingredients = await trader(filePath);;
         break;
       default:
         ingredients = [];

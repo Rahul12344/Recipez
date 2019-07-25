@@ -1,12 +1,13 @@
 const buildUrl = require('build-url');
+const config = require('../credentials/edamamConfig.js')
 
 function createPath(){
   return buildUrl('https://api.edamam.com', {
     path: 'search',
     queryParams: {
       q: '',
-      app_id: '37558882',
-      app_key: '0d32feed48cc030d66dc9712495d1e1d',
+      app_id: config.app_id,
+      app_key: config.app_key,
       from: '0',
       to: '5',
       calories: '0-2000',
