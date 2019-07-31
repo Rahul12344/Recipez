@@ -16,6 +16,7 @@ function decomposeReceiptIntoComponents(recipe){
             'haves': [myIngredients],
             'havenots': [otherIngredients],
             'totalTime': hit.recipe.totalTime,
+            'hits': 0
         });
     });
     recipeStructure = {'q': recipe.q,recipes:allRecipeMatches};
@@ -23,15 +24,14 @@ function decomposeReceiptIntoComponents(recipe){
 }
 
 function decomposeIntoComponentsForFirebaseAndDisplay(recipe){
-    allRecipeMatches.push(
-    {
+    recipeStructure = {[recipe.label]:{
+        'label': recipe.label,
         'source': recipe.source,
         'url': recipe.url,
         'healthLabels': recipe.healthLabels,
         'ingredientLines': recipe.ingredientLines,
         'totalTime': recipe.totalTime,
-    });
-    recipeStructure = {[recipe.label]:allRecipeMatches};
+    }};
     return recipeStructure;
 }
 

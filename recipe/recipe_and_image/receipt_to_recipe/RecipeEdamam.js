@@ -38,13 +38,13 @@ async function recipe(ingredients){
   try{
     const result = await axios.get(query_url);
     recipes = result.data;
-    console.log(recipes);
     recipecontainer = await recipeDB.receiptDBDriver();
     added = await recipeDB.addToRecipeFromReceipt(recipecontainer,recipes);
     if(!recipes){
       throw NoRecipeException;
     }
-    return recipes;
+    decomposed = decomposer.decomposeReceiptIntoComponents(result.data);
+    return decomposed.recipes;
   }
   catch(error) {
     console.log(error);

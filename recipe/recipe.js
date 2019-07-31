@@ -16,13 +16,7 @@ const firebaseRecipe = require('./user_auth/FirebaseRecipes/FirebaseRecipes.js')
 const recipe = require('../recipe/recipe_and_image/receipt_to_recipe/Recipe.js');
 
 
-const exec = require('child_process').exec;
-child = exec('source ./app-env',
-    function (error, stdout, stderr) {
-        if (error !== null) {
-             console.log('exec error: ' + error);
-        }
-    });
+const childProcess = require('child_process');
 
 const app = express();
 app.use(bodyParser.json());
@@ -33,6 +27,18 @@ fbinit.init;
 fbinit.initAdmin;
 
 const firebasedb = admin.database();
+
+function execShellCommand(cmd) {
+    const exec = require('child_process').exec;
+    return new Promise((resolve, reject) => {
+     exec(cmd, (error, stdout, stderr) => {
+      if (error) {
+       console.warn(error);
+      }
+      resolve(stdout? stdout : stderr);
+     });
+    });
+   }
 
 app.post('/login', (req, res) => {
     login(req.query.email, req.query.password)
@@ -80,10 +86,10 @@ app.post('/receipttorecipe', upload.single("receipt"), (req, res, next) => {
 });
 
 app.post('/addrecipe', (req,res) => {
-    console.log("Adding recipe");
-    firebaseRecipe.addRecipe(req.query.recipe)
+    console.log(req.body.recipe);
+    firebaseRecipe.addRecipe(firebasedb,firebase,req.body.recipe)
     .then((recipe) => {
-        res,send(recipe);
+        res.send(recipe);
     })
     .catch((error) => {
         console.log(error);
@@ -105,7 +111,7 @@ app.get('/getrecipe', (req,res) => {
 });
 
 app.get('/getallrecipes', (req,res) => {
-    firebaseRecipe.getAllRecipesComp(firebasedb,firebase)
+    firebaseRecipe.getAllRecipes(firebasedb,firebase)
     .then(recipes => {
         res.send(recipes);
     })
@@ -119,5 +125,11 @@ app.get('/', (req, res) => {
 });
 
 app.listen(process.env.PORT || 3000, () => {
-  console.log("listening on port 3000");
+    execShellCommand('./app-env')
+    .then((result) => {
+        console.log(result);
+        const parents = childProcess.execSync('echo $GOOGLE_APPLICATION_CREDENTIALS', { encoding: 'utf-8' });
+        console.log(parents);
+        console.log("listening on port 3000");
+    })
 });

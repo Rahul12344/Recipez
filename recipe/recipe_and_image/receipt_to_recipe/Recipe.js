@@ -1,11 +1,11 @@
-/*
-// TODO: Compile list of recipes obtained from API and db
-*/
 const getIngredients = require('./store_type/ItemFromStore.js');
 const getRecipeFromAPI = require('./RecipeEdamam.js');
 const recipeFromDB = require('./RecipeFromDB.js')
 const canonRules = require('../word_rules/CanonRules.js');
 
+/* 
+  Checks hosted DB for recipes; if the recipe does not exist, pings API to obtain recipe
+*/
 async function compileRecipes(filePath) {
   ingredients = await getIngredients(filePath);
   cleanIngredients = [];
@@ -14,6 +14,7 @@ async function compileRecipes(filePath) {
     cleanIngredients.push(cleanIngredient);
   }
   recipe = '';
+  cleanIngredients = ['chicken'];
   drecipe = await getRecipeFromDB(cleanIngredients);
   if(drecipe.length > 0){
     recipe = drecipe[0];
@@ -44,6 +45,5 @@ async function getRecipeFromDB (ingredients) {
   }
 }
 
-compileRecipes(['chicken']);
 
 module.exports = compileRecipes;

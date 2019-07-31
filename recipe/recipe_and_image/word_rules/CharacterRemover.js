@@ -7,6 +7,10 @@ const bnr = require('./BrandNameRemover.js');
     No brand names
     No unnecessary qualifiers i.e. weight
 */
+
+/*
+  Need to deprecate this in favor of something more easily understandable/algorithmically faster
+*/
 function charParser(word) {
   word = word.toLowerCase();
   word.replace(/[^a-zA-Z\s]+/g,' ');

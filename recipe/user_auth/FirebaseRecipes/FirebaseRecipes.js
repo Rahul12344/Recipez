@@ -1,10 +1,13 @@
 const refomatter = require('../../recipe_and_image/receipt_db/DecomposeRecipe.js');
+const recipeMongoDB = require('../../recipe_and_image/receipt_db/ReceiptDB');
 
 
-async function getAllRecipesComp(firebaseDB,firebase){
+async function getAllRecipes(firebaseDB,firebase){
     var recipeDict = {};
-    await getAllRecipes(firebaseDB,firebase)
+    console.log("Getting all recipes");
+    await getAllRecipesPromise(firebaseDB,firebase)
     .then(result => {
+        console.log(result);
         recipeDict =  result;
     })
     .catch(error => {
@@ -13,7 +16,7 @@ async function getAllRecipesComp(firebaseDB,firebase){
     return recipeDict;
 }
 
-async function getAllRecipes(firebaseDB,firebase){
+async function getAllRecipesPromise(firebaseDB,firebase){
     ref = await firebaseDB.ref('users/' + firebase.auth().currentUser.uid).child('recipes');
     var filterDataAccordingToRecipes = new Promise( function(resolve, reject) {
         ref.on('value', function(snap) {
@@ -31,12 +34,15 @@ function getRecipe(firebaseDB,firebase,ingredients){
       });
 }
 
-function addRecipe(firebaseDB,firebase,recipe){
+async function addRecipe(firebaseDB,firebase,recipe){
     console.log("Adding recipe to firebase");
     try{
-        return firebaseDB.ref('users/' + firebase.auth().currentUser.uid + '/recipes/').set(refomatter.decomposeIntoComponentsForFirebaseAndDisplay(recipe));
+        recipecontainer = await recipeMongoDB.receiptDBDriver();
+        updatedHits = await recipeMongoDB.addRecipeHit(recipecontainer,recipe.label,1);
+        return firebaseDB.ref('users/' + firebase.auth().currentUser.uid + '/recipes/').update(refomatter.decomposeIntoComponentsForFirebaseAndDisplay(recipe));
     }
     catch(err){
+        console.log(err);
         throw new FirebaseError();
     }
 }
@@ -57,7 +63,6 @@ module.exports = {
     getAllRecipes: getAllRecipes,
     getRecipe: getRecipe,
     addRecipe: addRecipe,
-    getAllRecipesComp:getAllRecipesComp,
     recipify: recipify
 }
 
