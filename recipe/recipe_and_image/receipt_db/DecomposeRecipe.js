@@ -13,13 +13,11 @@ function decomposeReceiptIntoComponents(recipe){
             'url': hit.recipe.url,
             'healthLabels': hit.recipe.healthLabels,
             'ingredientLines': hit.recipe.ingredientLines,
-            'haves': [myIngredients],
-            'havenots': [otherIngredients],
             'totalTime': hit.recipe.totalTime,
             'hits': 0
         });
     });
-    recipeStructure = {'q': recipe.q,recipes:allRecipeMatches};
+    recipeStructure = allRecipeMatches;
     return recipeStructure;
 }
 

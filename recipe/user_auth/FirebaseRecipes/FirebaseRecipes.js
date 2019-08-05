@@ -7,7 +7,6 @@ async function getAllRecipes(firebaseDB,firebase){
     console.log("Getting all recipes");
     await getAllRecipesPromise(firebaseDB,firebase)
     .then(result => {
-        console.log(result);
         recipeDict =  result;
     })
     .catch(error => {

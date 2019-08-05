@@ -15,13 +15,12 @@ async function addToUserMadeRecipes(db,recipe){
 }
 
 async function addToRecipeFromReceipt (db, recipes) {
-   const recipeCollection = db.collection('recipes');
-   matches = await queryRecipe(db, recipes.q);
-   if(matches.length > 0){
-       return;
-   }
-   recipesDecomposed = decomposeRecipe.decomposeReceiptIntoComponents(recipes);
-    recipeCollection.insertOne(recipesDecomposed, (err, result) => {
+    if(!db){
+        return;
+    }
+    const recipeCollection = db.collection('recipes');
+    recipesDecomposed = decomposeRecipe.decomposeReceiptIntoComponents(recipes);
+    recipeCollection.insertMany(recipesDecomposed, (err, result) => {
         if(err) throw err;
         return result;
     });
@@ -47,15 +46,18 @@ async function updateRecipe (db, ingredients, recipeName) {
 
 async function addRecipeHit(db, recipeName, increase){
     const recipeCollection = db.collection('recipes');
-    recipeCollection.updateOne({"recipes.label": recipeName},{ $inc: { "recipes.$.hits" : increase } }, (err,result) => {
+    recipeCollection.updateOne({"label": recipeName},{ $inc: { "hits" : increase } }, (err,result) => {
         if(err) throw err;
         return result;
     });
 }
 
 async function queryRecipe (db, ingredients) {
+    if(!db){
+        return;
+    }
     recipes = {};
-    await queryRecipePromise(db, ingredients)
+    await queryRecipePromise(db,ingredients)
     .then(rec => {
         recipes = rec;
     })
@@ -66,6 +68,9 @@ async function queryRecipe (db, ingredients) {
 }
 
 async function queryByName (db, recipeName) {
+    if(!db){
+        return;
+    }
     recipes = {};
     await queryByNamePromise(db, recipeName)
     .then(rec => {
@@ -78,6 +83,9 @@ async function queryByName (db, recipeName) {
 }
 
 async function allRecipes (db) {
+    if(!db){
+        return;
+    }
     recipes = {};
     await allRecipesPromise(db)
     .then(rec => {
@@ -110,13 +118,11 @@ async function getTrendingRecipes(db) {
 
 async function queryRecipePromise(db, ingredients){
     const recipeCollection = await db.collection('recipes');
+    query = createIngredientQuery(ingredients);
     var filterDataAccordingToRecipes = new Promise( function(resolve, reject) {
-        recipeCollection.find({'q':ingredients}).toArray((err,res) => {
-            if(err) console.log("ERROR");
-            recipes = [];
-            res.forEach((recipe) => {
-                recipes.push(recipe.recipes);
-            });
+        recipeCollection.find({$and:query}).sort({hits:-1}).limit(5).toArray((err,res) => {
+            if(err) throw err;
+            recipes = res;
             resolve(recipes);
         });
     });
@@ -126,8 +132,8 @@ async function queryRecipePromise(db, ingredients){
 async function queryByNamePromise (db, recipeName) {
     const recipeCollection = db.collection('recipes');
      var filterDataAccordingToRecipes = new Promise( function(resolve, reject) {
-        recipeCollection.find({"recipes.label": recipeName},{_id: 0, recipes: {$elemMatch: {label: recipeName}}}).toArray((err,res) => {
-            if(err) console.log("ERROR");
+        recipeCollection.find({"label": recipeName},{_id: 0}).toArray((err,res) => {
+            if(err) throw err;
             recipes = [];
             res.forEach((recipe) => {
                 recipes.push(recipe.recipes);
@@ -142,7 +148,7 @@ async function allRecipesPromise (db) {
     const recipeCollection = await db.collection('recipes');
     var filterDataAccordingToRecipes = new Promise( function(resolve, reject) {
         recipeCollection.find({}).toArray((err,res) => {
-            if(err) console.log("ERROR");
+            if(err) throw err;
             recipes = [];
             res.forEach((recipe) => {
                 recipes.push(recipe.recipes);
@@ -157,7 +163,7 @@ async function matchingUserRecipesPromise (db,ingredients) {
     const recipeCollection = await db.collection('userrecipes');
     var filterDataAccordingToRecipes = new Promise( function(resolve, reject) {
         recipeCollection.find({}).toArray((err,res) => {
-            if(err) console.log("ERROR");
+            if(err) throw err;
             recipes = [];
             res.forEach((recipe) => {
                 recipes.push(recipe.recipes);
@@ -168,7 +174,22 @@ async function matchingUserRecipesPromise (db,ingredients) {
     return filterDataAccordingToRecipes;
 }
 
+function createIngredientQuery(ingredients){
+    queries=[];
+    ingredients.forEach((ingredient) => {
+        queries.push(
+            {
+                ingredientLines:
+                {
+                    $regex:'.*' + ingredient + '.*'
+                }
+            }
+        )
+    })
+    return queries;
+}
 
+queryRecipe('',['banana']);
 module.exports =  { 
     receiptDBDriver: receiptDBDriver,
     addToUserMadeRecipes: addToUserMadeRecipes,
@@ -180,5 +201,5 @@ module.exports =  {
     allRecipes: allRecipes,
     addRecipeHit: addRecipeHit, 
     matchingUserRecipes: matchingUserRecipes,
-    getTrendingRecipes: getTrendingRecipes
+    getTrendingRecipes: getTrendingRecipes,
 };

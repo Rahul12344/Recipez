@@ -44,7 +44,7 @@ async function recipe(ingredients){
       throw NoRecipeException;
     }
     decomposed = decomposer.decomposeReceiptIntoComponents(result.data);
-    return decomposed.recipes;
+    return decomposed;
   }
   catch(error) {
     console.log(error);

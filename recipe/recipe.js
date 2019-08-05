@@ -76,7 +76,17 @@ app.post('/logout', (req,res) => {
 
 app.post('/receipttorecipe', upload.single("receipt"), (req, res, next) => {
     console.log('RECIPE')
-    recipe(req.query.file)
+    recipe.recipe(req.query.file)
+    .then((recipe) => {
+        res.send(recipe);
+    })
+    .catch((error) => {
+        console.log(error);
+    })
+});
+
+app.post('/adduserrecipe', (req,res) => {
+    firebaseRecipe.addRecipe(req.body.recipe)
     .then((recipe) => {
         res.send(recipe);
     })
@@ -86,7 +96,6 @@ app.post('/receipttorecipe', upload.single("receipt"), (req, res, next) => {
 });
 
 app.post('/addrecipe', (req,res) => {
-    console.log(req.body.recipe);
     firebaseRecipe.addRecipe(firebasedb,firebase,req.body.recipe)
     .then((recipe) => {
         res.send(recipe);
@@ -127,9 +136,7 @@ app.get('/', (req, res) => {
 app.listen(process.env.PORT || 3000, () => {
     execShellCommand('./app-env')
     .then((result) => {
-        console.log(result);
         const parents = childProcess.execSync('echo $GOOGLE_APPLICATION_CREDENTIALS', { encoding: 'utf-8' });
-        console.log(parents);
         console.log("listening on port 3000");
     })
 });

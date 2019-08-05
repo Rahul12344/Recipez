@@ -3,6 +3,8 @@ const getRecipeFromAPI = require('./RecipeEdamam.js');
 const recipeFromDB = require('./RecipeFromDB.js')
 const canonRules = require('../word_rules/CanonRules.js');
 
+const reformatter = require('../receipt_db/DecomposeRecipe.js')
+
 /* 
   Checks hosted DB for recipes; if the recipe does not exist, pings API to obtain recipe
 */
@@ -14,15 +16,21 @@ async function compileRecipes(filePath) {
     cleanIngredients.push(cleanIngredient);
   }
   recipe = '';
-  cleanIngredients = ['chicken'];
+  cleanIngredients = ['banana'];
   drecipe = await getRecipeFromDB(cleanIngredients);
   if(drecipe.length > 0){
-    recipe = drecipe[0];
+    recipe = drecipe;
   }
   else{
     recipe = await edamRecipe(cleanIngredients);
   }
-  return recipe;  
+  return recipe.slice(0,5);  
+}
+
+async function addUserRecipe(recipe){
+  reformattedRecipe = reformatter.decomposeReceiptIntoComponents(recipe);
+  
+  return reformattedRecipe;  
 }
 
 async function edamRecipe (ingredients) {
@@ -46,4 +54,7 @@ async function getRecipeFromDB (ingredients) {
 }
 
 
-module.exports = compileRecipes;
+module.exports = {
+  recipe: compileRecipes,
+  addUserRecipe: addUserRecipe
+}
