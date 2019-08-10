@@ -1,5 +1,11 @@
 const dbDriver = require('./MongoDriver.js');
 const decomposeRecipe = require('./DecomposeRecipe.js');
+const RecipeSchema = require('./schemas/RecipeSchema');
+const mongoosastic = require('mongoosastic');
+
+const { ElasticSearchManager } = require('./elastic-search/RecipeSearch');
+
+RecipeSchema.plugin(mongoosastic);
 
 async function receiptDBDriver(){
     db = await dbDriver();
@@ -18,12 +24,23 @@ async function addToRecipeFromReceipt (db, recipes) {
     if(!db){
         return;
     }
-    const recipeCollection = db.collection('recipes');
+    Recipe = db.model('recipe', RecipeSchema);
+    Recipe.createMapping(function(err, mapping){  
+        if(err){
+          console.log('error creating mapping (you can safely ignore this)');
+          console.log(err);
+        }
+        else{
+          console.log(mapping);
+        }
+      });
     recipesDecomposed = decomposeRecipe.decomposeReceiptIntoComponents(recipes);
-    recipeCollection.insertMany(recipesDecomposed, (err, result) => {
-        if(err) throw err;
-        return result;
-    });
+    try {
+        await Recipe.insertMany(recipesDecomposed);
+        return;
+      } catch(error) {
+        throw error
+      }
 }
 
 async function addToRecipe (db, recipe) {
@@ -57,6 +74,9 @@ async function queryRecipe (db, ingredients) {
         return;
     }
     recipes = {};
+    /*client = new ElasticSearchManager();
+    payload = await client.search('banana');
+    recipes = client._filter(payload);*/
     await queryRecipePromise(db,ingredients)
     .then(rec => {
         recipes = rec;

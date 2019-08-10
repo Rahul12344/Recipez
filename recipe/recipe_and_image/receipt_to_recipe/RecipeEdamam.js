@@ -40,6 +40,8 @@ async function recipe(ingredients){
     recipes = result.data;
     recipecontainer = await recipeDB.receiptDBDriver();
     added = await recipeDB.addToRecipeFromReceipt(recipecontainer,recipes);
+    console.log("ADDED");
+    console.log(added);
     if(!recipes){
       throw NoRecipeException;
     }

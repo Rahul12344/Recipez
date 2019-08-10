@@ -3,8 +3,6 @@ function decomposeReceiptIntoComponents(recipe){
     allHits = recipe.hits;
     allRecipeMatches = [];
     allHits.forEach(hit => {
-        var otherIngredients = splitIngredients(ingredientQuery,hit.recipe.ingredientLines).have_nots;
-        var myIngredients = splitIngredients(ingredientQuery,hit.recipe.ingredientLines).haves;
         allRecipeMatches.push(
         {
             'uri': hit.recipe.uri,
