@@ -1,5 +1,5 @@
 const refomatter = require('../../recipe_and_image/receipt_db/DecomposeRecipe.js');
-const recipeMongoDB = require('../../recipe_and_image/receipt_db/ReceiptDB');
+const { RecipeMongo } = require('../../recipe_and_image/receipt_db/mongo/RecipeMongo');
 
 
 async function getAllRecipes(firebaseDB,firebase){
@@ -36,8 +36,8 @@ function getRecipe(firebaseDB,firebase,ingredients){
 async function addRecipe(firebaseDB,firebase,recipe){
     console.log("Adding recipe to firebase");
     try{
-        recipecontainer = await recipeMongoDB.receiptDBDriver();
-        updatedHits = await recipeMongoDB.addRecipeHit(recipecontainer,recipe.label,1);
+        recipeContainer = new RecipeMongo();
+        updatedHits = await recipeContainer.addRecipeHit(recipe.label,1);
         return firebaseDB.ref('users/' + firebase.auth().currentUser.uid + '/recipes/').update(refomatter.decomposeIntoComponentsForFirebaseAndDisplay(recipe));
     }
     catch(err){

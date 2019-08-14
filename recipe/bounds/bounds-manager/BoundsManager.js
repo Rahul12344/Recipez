@@ -14,4 +14,4 @@ class BoundsManager{
 }
 
 
-module.exports = BoundsManager;
+module.exports = {BoundsManager};

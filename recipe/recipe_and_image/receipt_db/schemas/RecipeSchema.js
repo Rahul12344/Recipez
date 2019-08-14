@@ -4,23 +4,25 @@ var RecipeSchema = new mongoose.Schema({
     uri: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
     },
     label:  {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
         es_indexed:true
     },
     source: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
+        es_indexed:true
     },
     url: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
+        es_indexed:true
     },
     healthLabels: {
         type: [String],

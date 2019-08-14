@@ -15,6 +15,9 @@ const getuser = require("./user_auth/getuser");
 const firebaseRecipe = require('./user_auth/FirebaseRecipes/FirebaseRecipes.js');
 const recipe = require('../recipe/recipe_and_image/receipt_to_recipe/Recipe.js');
 
+const { FirebaseManager } = require('./user_auth/FirebaseManager/FirebaseManager');
+//const fbm = new FirebaseManager();
+
 
 const childProcess = require('child_process');
 

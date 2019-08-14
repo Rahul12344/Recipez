@@ -1,7 +1,8 @@
 const getIngredients = require('./store_type/ItemFromStore.js');
 const getRecipeFromAPI = require('./RecipeEdamam.js');
-const recipeFromDB = require('./RecipeFromDB.js')
 const canonRules = require('../word_rules/CanonRules.js');
+
+const { ElasticSearchManager } = require('../receipt_db/elastic-search/RecipeSearch');
 
 const reformatter = require('../receipt_db/DecomposeRecipe.js')
 
@@ -19,9 +20,11 @@ async function compileRecipes(filePath) {
     cleanIngredients.push(cleanIngredient);
   }
   recipe = '';
-  cleanIngredients = ['chicken','bread'];
-  drecipe = await getRecipeFromDB(cleanIngredients);
-  if(drecipe.length > 0){
+  //cleanIngredients = ['spinach','pork'];
+  esm = new ElasticSearchManager();
+  drecipe = await esm.search(cleanIngredients);
+  if(drecipe.length > 30){
+    drecipe = esm._filter(drecipe);
     recipe = drecipe;
   }
   else{
@@ -45,17 +48,6 @@ async function edamRecipe (ingredients) {
     return error;
   }
 }
-
-async function getRecipeFromDB (ingredients) {
-  try {
-    recipes = await recipeFromDB(ingredients);
-    return recipes;
-  }
-  catch(error) {
-    return error;
-  }
-}
-
 
 module.exports = {
   recipe: compileRecipes,

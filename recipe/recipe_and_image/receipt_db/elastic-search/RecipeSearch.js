@@ -10,6 +10,7 @@ class ElasticSearchManager{
     async search(ingredients){
         const recipePayload = await this.client.search({
             body: {
+                from: 0, size: 100,
                 query: {
                     bool:{
                         must: this._createQuery(ingredients)
@@ -17,6 +18,7 @@ class ElasticSearchManager{
                 }
             }
           });
+          console.log(recipePayload.hits.hits);
           return recipePayload.hits.hits;
     }
 
@@ -26,7 +28,7 @@ class ElasticSearchManager{
                 query: {
                     multi_match:{
                         query: recipeName,
-                        fuzziness: 1,
+                        fuzziness: 2,
                     }
                 }
             }
@@ -64,10 +66,5 @@ class ElasticSearchManager{
     }
 
 }
-
-const esm = new ElasticSearchManager();
-//esm.search(['chicken','bread']);
-esm.nameSearch('Chicken Scaloppini');
-
 
 module.exports = { ElasticSearchManager };
