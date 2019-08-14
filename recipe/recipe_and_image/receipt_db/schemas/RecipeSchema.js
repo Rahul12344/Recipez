@@ -9,7 +9,7 @@ var RecipeSchema = new mongoose.Schema({
     label:  {
         type: String,
         required: true,
-        unique: false,
+        unique: true,
         es_indexed:true
     },
     source: {

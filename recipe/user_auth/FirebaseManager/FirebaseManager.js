@@ -24,8 +24,12 @@ class FirebaseManager {
     _initAdmin() {
         return admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
-            databaseURL: config.databaseURL
+            databaseURL: this.config.databaseURL
         });
+    }
+
+    _close(){
+        
     }
 
     getUser() {
@@ -41,20 +45,18 @@ class FirebaseManager {
     }
 
     signup(emailCred, passCred) {
-        firebase.auth().createUserWithEmailAndPassword(emailCred, passCred)
-        .then((signedInUser) => {
-            firebasedb.ref('users/' + firebase.auth().currentUser.uid + "/profile/").set(JSON.parse(JSON.stringify(firebase.auth().currentUser)));
-            firebasedb.ref('users/' + firebase.auth().currentUser.uid + "/recipes/").set('');
-            return signedInUser;
-        })
-        .catch((error) => {
-            console.log(error);
-        })
+        return firebase.auth().createUserWithEmailAndPassword(emailCred, passCred)
+    }
+
+    addUser(signedInUser){
+        this.firebasedb.ref('users/' + firebase.auth().currentUser.uid + "/profile/").set(JSON.parse(JSON.stringify(firebase.auth().currentUser)));
+        this.firebasedb.ref('users/' + firebase.auth().currentUser.uid + "/recipes/").set('');
+        return signedInUser;
     }
 
     async getAllRecipes(){
         var recipeDict = {};
-        await getAllRecipesPromise()
+        await this.getAllRecipesPromise()
         .then(result => {
             recipeDict =  result;
         })
@@ -66,7 +68,7 @@ class FirebaseManager {
     
     async getRecipe(ingredients){
         var recipeDict = {};
-        await getRecipePromise(ingredients)
+        await this.getRecipePromise(ingredients)
         .then(result => {
             recipeDict =  result;
         })
@@ -79,9 +81,8 @@ class FirebaseManager {
     async addRecipe(recipe){
         console.log("Adding recipe to firebase");
         try{
-            mongoManager = new RecipeMongo();
-            updatedHits = await mongoManager.addRecipeHit(recipe.label,1);
-            mongoManager.close();
+            let mongoManager = new RecipeMongo();
+            let updatedHits = await mongoManager.addRecipeHit(recipe.label,1);
             return this.firebasedb.ref('users/' + firebase.auth().currentUser.uid + '/recipes/').update(refomatter.decomposeIntoComponentsForFirebaseAndDisplay(recipe));
         }
         catch(err){
@@ -93,10 +94,10 @@ class FirebaseManager {
     /*** NON-RETURNABLES ***/
 
     async getAllRecipesPromise(){
-        ref = await this.firebasedb.ref('users/' + firebase.auth().currentUser.uid).child('recipes');
+        let ref = await this.firebasedb.ref('users/' + firebase.auth().currentUser.uid).child('recipes');
         var filterDataAccordingToRecipes = new Promise( function(resolve, reject) {
             ref.on('value', function(snap) {
-                filteredObj = snap.val();
+                let filteredObj = snap.val();
                 resolve(filteredObj);
             });
         });
@@ -104,10 +105,10 @@ class FirebaseManager {
     }
 
     async getRecipePromise(ingredients){
-        ref = await this.firebasedb.ref('users/' + firebase.auth().currentUser.uid).child('recipes');
+        let ref = await this.firebasedb.ref('users/' + firebase.auth().currentUser.uid).child('recipes');
         var filterDataAccordingToRecipes = new Promise( function(resolve, reject) {
             ref.on(ingredients, function(snap) {
-                filteredObj = snap.val();
+               let filteredObj = snap.val();
                 resolve(filteredObj);
             });
         });

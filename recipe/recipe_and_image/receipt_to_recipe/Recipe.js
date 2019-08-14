@@ -20,7 +20,6 @@ async function compileRecipes(filePath) {
     cleanIngredients.push(cleanIngredient);
   }
   recipe = '';
-  //cleanIngredients = ['spinach','pork'];
   esm = new ElasticSearchManager();
   drecipe = await esm.search(cleanIngredients);
   if(drecipe.length > 30){

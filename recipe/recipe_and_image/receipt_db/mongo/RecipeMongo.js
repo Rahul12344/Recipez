@@ -96,6 +96,19 @@ class RecipeMongo {
         recipes = await allRecipes();
     }
     
+    async mapReduce(){
+        let mapper = {};
+        mapper.map = () => {
+            emit(Recipe.label)
+        };
+        mapper.reduce = (key,values) => {
+            return values;
+        };
+        this.Recipe.mapReduce(mapper, (err,res) => {
+            if(err) throw err;
+            console.log(res);
+        });
+    }
     
     async queryRecipePromise(ingredients){
         const recipeCollection = await this.client.collection('recipes');
@@ -171,5 +184,8 @@ class RecipeMongo {
     }
 
 }
+
+/*const rm = new RecipeMongo();
+rm.mapReduce();*/
 
 module.exports = { RecipeMongo };
