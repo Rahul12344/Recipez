@@ -3,6 +3,7 @@ const getRecipeFromAPI = require('./RecipeEdamam.js');
 const canonRules = require('../word_rules/CanonRules.js');
 
 const { ElasticSearchManager } = require('../receipt_db/elastic-search/RecipeSearch');
+const { FoodWords } = require('../../bounds/associations/FoodWords');
 
 const reformatter = require('../receipt_db/DecomposeRecipe.js')
 
@@ -11,17 +12,22 @@ const reformatter = require('../receipt_db/DecomposeRecipe.js')
 */
 async function compileRecipes(filePath) {
   ingredients = await getIngredients(filePath);
+  FoodWordIdentifier = new FoodWords();
+  cleanIngredients = [];
+
+  for (var i = 0; i < ingredients.length; i++) {
+    var cleanIngredient = await canonRules(ingredients[i]);
+    if(FoodWordIdentifier.isFoodWord(ingredients[i])){
+      cleanIngredients.push(cleanIngredient);
+    }
+  }
   if(ingredients == []){
     return [];
   }
-  cleanIngredients = [];
-  for (var i = 0; i < ingredients.length; i++) {
-    var cleanIngredient = await canonRules(ingredients[i]);
-    cleanIngredients.push(cleanIngredient);
-  }
+
   recipe = '';
-  esm = new ElasticSearchManager();
-  drecipe = await esm.search(cleanIngredients);
+  ElasticSearchManager = new ElasticSearchManager();
+  drecipe = await ElasticSearchManager.search(cleanIngredients);
   if(drecipe.length > 30){
     drecipe = esm._filter(drecipe);
     recipe = drecipe;
