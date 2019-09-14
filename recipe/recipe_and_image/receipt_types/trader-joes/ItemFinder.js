@@ -4,7 +4,6 @@ const cheerio = require('cheerio');
 const parseImage = require('../../TextClassify');
 const createTargetQuery = require('./QueryCreater.js')
 const reformatter = require('./TraderJoesItem.js')
-const isOnSlope = require('../../../bounds/bounds-manager/BoundsManager.js'); 
 /*
   Need sample receipts
 */

@@ -18,7 +18,7 @@ class ElasticSearchManager{
                 }
             }
           });
-          console.log(recipePayload.hits.hits);
+          console.log(recipePayload.hits.hits[0]);
           return recipePayload.hits.hits;
     }
 
@@ -55,9 +55,10 @@ class ElasticSearchManager{
         ingredients.forEach((ingredient) => {
             musts.push(
                 {
-                    multi_match:{
-                        query: ingredient,
-                        fuzziness: 1,
+                    regexp:{
+                        ingredientLines:{
+                            value: ingredient
+                        }
                     }
                 }
             )
@@ -66,5 +67,6 @@ class ElasticSearchManager{
     }
 
 }
+
 
 module.exports = { ElasticSearchManager };

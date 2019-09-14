@@ -28,8 +28,12 @@ class FirebaseManager {
         });
     }
 
-    _close(){
+    _facebookInit(){
         
+    }
+
+    _close(){
+        firebase.auth().signOut();
     }
 
     getUser() {
