@@ -14,5 +14,4 @@ class Helpers {
     }
 }
 
-helper = new Helpers();
-helper.createRegexes("brd");
+module.exports = { Helpers }

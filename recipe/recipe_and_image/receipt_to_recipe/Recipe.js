@@ -3,6 +3,7 @@ const getRecipeFromAPI = require('./RecipeEdamam.js');
 const canonRules = require('../word_rules/CanonRules.js');
 
 const { ElasticSearchManager } = require('../receipt_db/elastic-search/RecipeSearch');
+const { Helpers } = require('./Helpers');
 
 const reformatter = require('../receipt_db/DecomposeRecipe.js')
 
@@ -11,12 +12,14 @@ const reformatter = require('../receipt_db/DecomposeRecipe.js')
 */
 
 async function compileRecipes(filePath) {
+  regexHelper = new Helpers();
+
   ingredients = await getIngredients(filePath);
   cleanIngredients = [];
 
   for (var i = 0; i < ingredients.length; i++) {
     var cleanIngredient = await canonRules(ingredients[i]);
-    cleanIngredients.push(cleanIngredient);
+    cleanIngredients.push(regexHelper.createRegexes(cleanIngredient));
   }
   if(ingredients == []){
     return [];

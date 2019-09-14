@@ -18,7 +18,6 @@ class ElasticSearchManager{
                 }
             }
           });
-          console.log(recipePayload.hits.hits[0]);
           return recipePayload.hits.hits;
     }
 
