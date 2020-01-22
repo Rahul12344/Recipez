@@ -1,5 +1,3 @@
 # Recipez
 
-TODO - Introduce error handling on all levels
-
-TODO - Create front-end interface with React Native and implement nodejs concurrently
+Recipez' Node.js portion should control two things: parsing of text on receipts and identifying food words.

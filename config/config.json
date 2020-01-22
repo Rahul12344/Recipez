@@ -1,0 +1,5 @@
+{
+    "PYTHON_HOST" : "localhost:5000/",
+    "NODE_HOST" : "localhost:3000/",
+    "JAVA_HOST" : "localhost:8888/"
+}

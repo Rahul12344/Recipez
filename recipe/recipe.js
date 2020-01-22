@@ -5,11 +5,13 @@ const multer = require('multer');
 var upload = multer({ dest: 'uploads/' })
 const path = require('path');
 
-const recipe = require('../recipe/recipe_and_image/receipt_to_recipe/Recipe.js');
-
+const { GetInfo } = require('./RecipeAndImage/ReceiptToItem/ParseText/GetInfo')
 const { FirebaseManager } = require('./user_auth/FirebaseManager/FirebaseManager');
 
+const config = require('../config/config.json');v
+
 const firebaseManager = new FirebaseManager();
+const receiptFoodInformation = new GetInfo();
 
 
 const childProcess = require('child_process');
@@ -61,9 +63,8 @@ app.post('/logout', (req,res) => {
     });
 });
 
-app.post('/receipttorecipe', upload.single("receipt"), (req, res, next) => {
-    console.log('RECIPE')
-    recipe.recipe(req.query.file)
+app.post('/receipt', upload.single("receipt"), (req, res, next) => {
+    receiptFoodInformation.getItemsOnReceipt(req.query.file)
     .then((recipe) => {
         res.send(recipe);
     })
@@ -117,7 +118,7 @@ app.get('/getallrecipes', (req,res) => {
 });
 
 app.get('/', (req, res) => {
-  res.send("Recipes");
+  res.send("Recipez!");
 });
 
 app.listen(process.env.PORT || 3000, () => {
