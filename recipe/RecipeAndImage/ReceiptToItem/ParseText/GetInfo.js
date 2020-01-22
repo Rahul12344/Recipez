@@ -1,10 +1,11 @@
-const { FindText } = require('../../TextClassify');
+const { FindText } = require('./Text');
 const config = require('../../../../config/config.json');
 
 class GetReceiptInfo {
 
     async associateAndFilter(allWords){
-        foodWords = allWords.filter(word => await this._filter(word));
+        //foodWords = allWords.filter(word => await this._filter(word));
+        return allWords;
     }
 
     async getItemsOnReceipt(image){

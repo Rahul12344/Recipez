@@ -4,9 +4,7 @@ const firebase = require("firebase");
 const serviceAccount = require("../credentials/serviceAccountKey.json");
 const firebaseConfig = require("../credentials/export-key.js");
 
-const refomatter = require('../../recipe_and_image/receipt_db/DecomposeRecipe.js');
-
-const { RecipeMongo } = require('../../recipe_and_image/receipt_db/mongo/RecipeMongo');
+const refomatter = require('../../RecipeAndImage/ReceiptDB/DecomposeRecipe');
 
 class FirebaseManager {
 
@@ -85,8 +83,6 @@ class FirebaseManager {
     async addRecipe(recipe){
         console.log("Adding recipe to firebase");
         try{
-            let mongoManager = new RecipeMongo();
-            let updatedHits = await mongoManager.addRecipeHit(recipe.label,1);
             return this.firebasedb.ref('users/' + firebase.auth().currentUser.uid + '/recipes/').update(refomatter.decomposeIntoComponentsForFirebaseAndDisplay(recipe));
         }
         catch(err){

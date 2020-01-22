@@ -6,12 +6,11 @@ var upload = multer({ dest: 'uploads/' })
 const path = require('path');
 
 const { GetInfo } = require('./RecipeAndImage/ReceiptToItem/ParseText/GetInfo')
-const { FirebaseManager } = require('./user_auth/FirebaseManager/FirebaseManager');
+const { FirebaseManager } = require('./UserAuth/FirebaseManager/FirebaseManager');
 
-const config = require('../config/config.json');v
+const config = require('../config/config.json');
 
 const firebaseManager = new FirebaseManager();
-const receiptFoodInformation = new GetInfo();
 
 
 const childProcess = require('child_process');
@@ -64,7 +63,7 @@ app.post('/logout', (req,res) => {
 });
 
 app.post('/receipt', upload.single("receipt"), (req, res, next) => {
-    receiptFoodInformation.getItemsOnReceipt(req.query.file)
+    GetInfo.getItemsOnReceipt(req.query.file)
     .then((recipe) => {
         res.send(recipe);
     })
